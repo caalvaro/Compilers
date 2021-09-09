@@ -1,0 +1,338 @@
+Test 1: #1 Bloco vazio
+Incorrect program output
+--- Input ---
+let i;
+for( i = 0; i < 10; i = i + 1 ) {
+}
+
+--- Program output ---
+syntax error
+ERRO DE COMPILAÇÃO (linha 1) Proximo a: i
+=== Console ===
+=== Vars ===
+|{ undefined: undefined; }|
+=== Pilha ===
+
+--- Expected output (exact text)---
+=== Console ===
+=== Vars ===
+|{ i: 10; undefined: undefined; }|
+=== Pilha ===
+
+
+Test 2: #2 objetos literais
+Incorrect program output
+--- Input ---
+let o = {
+  campo: 'aba',
+  pi: 31415.0 / 10000.0,
+  obj: { g: 56 }
+};
+
+--- Program output ---
+syntax error
+ERRO DE COMPILAÇÃO (linha 1) Proximo a: o
+=== Console ===
+=== Vars ===
+|{ undefined: undefined; }|
+=== Pilha ===
+
+--- Expected output (exact text)---
+=== Console ===
+=== Vars ===
+|{ o: { campo: aba; obj: { g: 56; }; pi: 3.1415; }; undefined: undefined; }|
+=== Pilha ===
+
+
+
+Test 3: #3 arrays
+Incorrect program output
+--- Input ---
+function log( msg ) {
+  msg asm{println # undefined};
+}
+
+let console = { log: log, teste : [ 'aba', 'cate' ] };
+
+console.log( [1, 2, 3] );
+console.log( console.teste );
+
+--- Program output ---
+syntax error
+ERRO DE COMPILAÇÃO (linha 5) Proximo a: console
+=== Console ===
+=== Vars ===
+|{ undefined: undefined; }|
+=== Pilha ===
+
+--- Expected output (exact text)---
+=== Console ===
+[ 1 2 3 ]
+[ aba cate ]
+=== Vars ===
+|{ console: { log: { &funcao: ##; }; teste: [ aba cate ]; }; log: { &funcao: ##; }; undefined: undefined; }|
+=== Pilha ===
+
+
+
+Test 4: #4 arrays e objetos
+Incorrect program output
+--- Input ---
+function log( msg ) {
+  msg asm{println # undefined};
+}
+
+function criaObj() {
+  return { a : [ {}, { teste: 1 }, c=24*8+1 ], b: 'nome' };
+}
+
+let obj;
+let c;
+obj = criaObj();
+
+log( obj );
+log( obj.a );
+log( obj.a[obj.a[1].teste+1] );
+
+--- Program output ---
+syntax error
+ERRO DE COMPILAÇÃO (linha 6) Proximo a: a
+=== Console ===
+=== Vars ===
+|{ undefined: undefined; }|
+=== Pilha ===
+
+--- Expected output (exact text)---
+=== Console ===
+{ a: [ { } { teste: 1; } 193 ]; b: nome; }
+[ { } { teste: 1; } 193 ]
+193
+=== Vars ===
+|{ c: 193; criaObj: { &funcao: ##; }; log: { &funcao: ##; }; obj: { a: [ { } { teste: 1; } 193 ]; b: nome; }; undefined: undefined; }|
+=== Pilha ===
+
+
+
+Test 5: #5 Função anônima
+Incorrect program output
+--- Input ---
+let par = function( n ) {
+  if( n % 2 == 0 )
+    return true;
+  else
+    return false;
+};
+
+let a = par( 4 );
+
+--- Program output ---
+syntax error
+ERRO DE COMPILAÇÃO (linha 1) Proximo a: par
+=== Console ===
+=== Vars ===
+|{ undefined: undefined; }|
+=== Pilha ===
+
+--- Expected output (exact text)---
+=== Console ===
+=== Vars ===
+|{ a: true; par: { &funcao: ##; }; undefined: undefined; }|
+=== Pilha ===
+
+
+
+Test 6: #6 Função seta. map, forEach
+Incorrect program output
+--- Input ---
+function log( msg ) {
+  msg asm{println # undefined};
+}
+
+function map( a, f ) {
+  let res = [];
+
+  forEach( a, (x,j) => (res[j] = f(x)) );
+
+  return res;
+}
+
+function forEach( array, funcao ) {
+  for( let i = 0; i < array.size; i = i + 1 )
+    funcao( array[i], i );
+}
+
+let a = [ 1, 2, 3, 4 ];
+log( map( a, x => x*x + 1 ) );
+
+--- Program output ---
+syntax error
+ERRO DE COMPILAÇÃO (linha 6) Proximo a: res
+=== Console ===
+=== Vars ===
+|{ undefined: undefined; }|
+=== Pilha ===
+
+--- Expected output (exact text)---
+=== Console ===
+[ 2 5 10 17 ]
+=== Vars ===
+|{ a: [ 1 2 3 4 ]; forEach: { &funcao: ##; }; log: { &funcao: ##; }; map: { &funcao: ##; }; undefined: undefined; }|
+=== Pilha ===
+
+
+
+Test 7: #7 reduce, pipe
+Incorrect program output
+--- Input ---
+function log( msg ) {
+  msg asm{println # undefined};
+}
+
+function invert( a ) {
+  let res = [];
+
+  for( let i = 0; i < a.size; i = i + 1 )
+    res[a.size-i-1] = a[i];
+
+  return res;
+}
+
+function reduce( a, f, x ) {
+  for( let i = 0; i < a.size; i = i + 1 )
+    x = f( a[i], x, i );
+
+  return x;
+}
+
+let a = [1, 2, 3, 4, 5];
+
+log( reduce( a, (x,y) => x + y, 0 ) );
+
+let b = [ x => 2*x, x => x + 1 ];
+
+let pipe = (af, x) => reduce( af, (f,x) => f(x), x );
+
+log( pipe( b, 9 ) );
+log( pipe( invert( b ), 9 ) );
+
+--- Program output ---
+syntax error
+ERRO DE COMPILAÇÃO (linha 6) Proximo a: res
+=== Console ===
+=== Vars ===
+|{ undefined: undefined; }|
+=== Pilha ===
+
+--- Expected output (exact text)---
+=== Console ===
+15
+19
+20
+=== Vars ===
+|{ a: [ 1 2 3 4 5 ]; b: [ { &funcao: ##; } { &funcao: ##; } ]; invert: { &funcao: ##; }; log: { &funcao: ##; }; pipe: { &funcao: ##; }; reduce: { &funcao: ##; }; undefined: undefined; }|
+=== Pilha ===
+
+
+
+Test 8: #8 Funções em objetos
+Incorrect program output
+--- Input ---
+function criaPessoa( nome, sobrenome ) {
+  return { nome: nome, sobrenome: sobrenome, nomeCompleto : pessoa => pessoa.nome + ' ' + pessoa.sobrenome };
+}
+
+function log( msg ) {
+  msg asm{println # undefined};
+}
+
+let p = criaPessoa( 'Maria', 'da Silva' );
+
+log( p.nomeCompleto( p ) );
+
+--- Program output ---
+syntax error
+ERRO DE COMPILAÇÃO (linha 2) Proximo a: nome
+=== Console ===
+=== Vars ===
+|{ undefined: undefined; }|
+=== Pilha ===
+
+--- Expected output (exact text)---
+=== Console ===
+Maria da Silva
+=== Vars ===
+|{ criaPessoa: { &funcao: ##; }; log: { &funcao: ##; }; p: { nome: Maria; nomeCompleto: { &funcao: ##; }; sobrenome: da Silva; }; undefined: undefined; }|
+=== Pilha ===
+
+
+
+Test 9: #9 Parâmetros default
+Incorrect program output
+--- Input ---
+function log( msg ) {
+  msg asm{println # undefined};
+}
+
+function mdc( a = 36, b = 48 ) {
+  if( b == 0 )
+    return a;
+  else
+    return mdc( b, a%b );
+}
+
+log( mdc() );
+log( mdc( 18 ) );
+log( mdc( 15, 25 ) );
+
+--- Program output ---
+syntax error
+ERRO DE COMPILAÇÃO (linha 5) Proximo a: =
+=== Console ===
+=== Vars ===
+|{ undefined: undefined; }|
+=== Pilha ===
+
+--- Expected output (exact text)---
+=== Console ===
+12
+6
+5
+=== Vars ===
+|{ log: { &funcao: ##; }; mdc: { &funcao: ##; }; undefined: undefined; }|
+=== Pilha ===
+
+
+
+Test 10: #10 Parâmetros default - expressões seta
+Incorrect program output
+--- Input ---
+function log( msg ) {
+  msg asm{println # undefined};
+}
+
+function imprimeMdc( a = 36, b = 48, print = m => log( 'Saida: ' + m )  ) {
+  if( b == 0 )
+    print( a );
+  else
+    imprimeMdc( b, a%b, print );
+}
+
+imprimeMdc( 24, 18 );
+imprimeMdc( 8, 4, log );
+
+--- Program output ---
+syntax error
+ERRO DE COMPILAÇÃO (linha 5) Proximo a: =
+=== Console ===
+=== Vars ===
+|{ undefined: undefined; }|
+=== Pilha ===
+
+--- Expected output (exact text)---
+=== Console ===
+Saida: 6
+4
+=== Vars ===
+|{ imprimeMdc: { &funcao: ##; }; log: { &funcao: ##; }; undefined: undefined; }|
+=== Pilha ===
+
